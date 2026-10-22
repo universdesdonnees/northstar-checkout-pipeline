@@ -86,7 +86,20 @@ jobs:
         env:
           IMAGE_TAG: ${{ steps.tag.outputs.image_tag }}
         run: |
-          aws ecr wait image-scan-complete --repository-name "$ECR_REPOSITORY" --image-id imageTag="$IMAGE_TAG"
+          # ECR starts the scan a few seconds after the push. Ask for its status every 10 seconds.
+          for ATTEMPT in $(seq 1 30); do
+            STATUS=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id imageTag="$IMAGE_TAG" \
+              --query 'imageScanStatus.status' --output text 2> /dev/null || echo "NOT_STARTED")
+            echo "Scan status: $STATUS"
+            if [ "$STATUS" = "COMPLETE" ] || [ "$STATUS" = "FAILED" ]; then
+              break
+            fi
+            sleep 10
+          done
+          if [ "$STATUS" != "COMPLETE" ]; then
+            echo "::error::The scan of $IMAGE_TAG did not complete."
+            exit 1
+          fi
           aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id imageTag="$IMAGE_TAG" \
             --query 'imageScanFindings.findingSeverityCounts' --output json
           CRITICAL=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id imageTag="$IMAGE_TAG" \
