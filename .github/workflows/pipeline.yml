@@ -1,6 +1,6 @@
 # The delivery pipeline of the Northstar checkout.
 # On a pull request: lint and unit tests only.
-# On a merge to main: tests, one image, then staging.
+# On a merge to main: tests, one image, staging, then production after an approval.
 name: Pipeline
 
 on:
@@ -120,3 +120,13 @@ jobs:
       environment: staging
       image_tag: ${{ needs.build.outputs.image_tag }}
 
+  deploy-production:
+    name: Production
+    needs: [build, deploy-staging]
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      environment: production
+      image_tag: ${{ needs.build.outputs.image_tag }}
