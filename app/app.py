@@ -53,7 +53,7 @@ def create_demo_order():
     if "@" not in email or email.startswith("@") or email.endswith("@"):
         return jsonify(error="Enter a valid email address."), 400
 
-    unit_price_cents = TICKET_PRICE_CENTS
+    unit_price_cents = TICKET_PRICE_CENTS + SERVICE_FEE_CENTS
     total_cents = quantity * unit_price_cents
 
     return (
