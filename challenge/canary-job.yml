@@ -5,7 +5,7 @@
   canary:
     name: Canary in production
     needs: [build, YOUR CODE HERE]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: YOUR CODE HERE
     permissions:
       id-token: write

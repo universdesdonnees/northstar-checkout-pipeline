@@ -19,7 +19,7 @@ env:
 jobs:
   test:
     name: Lint and unit tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: app
@@ -45,7 +45,7 @@ jobs:
     name: Build, push and scan the image
     needs: test
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write    # lets the job ask GitHub for an OIDC token
       contents: read
