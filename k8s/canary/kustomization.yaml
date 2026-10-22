@@ -1,0 +1,18 @@
+# Challenge solution: a canary of the checkout in production.
+# One Pod named checkout-canary in the namespace prod. Its Pods keep the
+# label app: checkout, so the Service of prod sends them a share of the
+# traffic, and carry track: canary, so the stable Deployment ignores them.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: prod
+resources:
+  - ../base
+nameSuffix: -canary
+replicas:
+  - name: checkout
+    count: 1
+labels:
+  - pairs:
+      track: canary
+    includeSelectors: true    # the canary Deployment selects only canary Pods
+    includeTemplates: true    # and its Pods carry the canary label
