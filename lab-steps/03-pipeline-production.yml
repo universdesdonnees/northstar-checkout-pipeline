@@ -90,7 +90,7 @@ jobs:
           for ATTEMPT in $(seq 1 30); do
             STATUS=$(aws ecr describe-image-scan-findings --repository-name "$ECR_REPOSITORY" --image-id imageTag="$IMAGE_TAG" \
               --query 'imageScanStatus.status' --output text 2> /dev/null || echo "NOT_STARTED")
-            echo "Scan status: $STATUS"
+            echo "Attempt $ATTEMPT: scan status $STATUS"
             if [ "$STATUS" = "COMPLETE" ] || [ "$STATUS" = "FAILED" ]; then
               break
             fi
