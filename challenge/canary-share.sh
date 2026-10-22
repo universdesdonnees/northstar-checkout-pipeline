@@ -12,7 +12,7 @@ REQUESTS="${3:-40}"
 HOST=$(kubectl -n "$NAMESPACE" get service checkout -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 NEW=0
 OLD=0
-for i in $(seq 1 "$REQUESTS"); do
+for _ in $(seq 1 "$REQUESTS"); do
   VERSION=$(curl -s --max-time 5 "http://$HOST/api/info" | jq -r '.version' 2>/dev/null)
   if [ "$VERSION" = "$NEW_VERSION" ]; then
     NEW=$((NEW + 1))

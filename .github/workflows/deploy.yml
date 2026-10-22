@@ -82,6 +82,9 @@ jobs:
           echo "url=http://$HOST" >> "$GITHUB_OUTPUT"
           ./scripts/smoke-test.sh "http://$HOST" "$IMAGE_TAG"
 
+      - name: Remove the canary after the full rollout
+        run: kubectl -n "$NAMESPACE" delete deployment checkout-canary --ignore-not-found
+
       - name: Roll back after a failure
         if: failure() && steps.apply.outcome == 'success'
         run: |
